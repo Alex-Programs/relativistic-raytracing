@@ -12,12 +12,17 @@ impl PrimitiveRay {
         PrimitiveRay { origin, direction }
     }
 
+    pub fn at(&self, t: f32) -> Vec3 {
+        self.origin + t*self.direction
+    }
+
     pub fn get_result(&self, scene: &Scene) -> Rgb<u8> { // TODO take parameters and scene
         for object in &scene.objects {
             let result = object.check_hit(self);
             match result {
-                Some(colour) => {
-                    return colour;
+                Some(t) => {
+                    let n = (self.at(t) - Vec3::new(0.0, 0.0, -1.0)).normalize();
+                    return Rgb::<u8>([((n.x + 1.0) * 255.0 * 0.5) as u8, ((n.y + 1.0) * 255.0 * 0.5) as u8, ((n.z + 1.0) * 255.0 * 0.5) as u8])
                 }
                 None => {
                     continue;
